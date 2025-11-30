@@ -9,11 +9,13 @@ async function getBrowser() {
   
   // Check if running in Vercel/serverless
   if (process.env.AWS_LAMBDA_FUNCTION_VERSION || process.env.VERCEL) {
-    const chromium = await import("@sparticuz/chromium").then(m => m.default);
+    const chromium = await import("@sparticuz/chromium-min").then(m => m.default);
     return puppeteer.launch({
       args: chromium.args,
       defaultViewport: { width: 1280, height: 800 },
-      executablePath: await chromium.executablePath(),
+      executablePath: await chromium.executablePath(
+        "https://github.com/nickapps/chromium/releases/download/v131.0.0/chromium-v131.0.0-pack.tar"
+      ),
       headless: true,
     });
   }
