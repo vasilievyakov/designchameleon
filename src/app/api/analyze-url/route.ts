@@ -35,14 +35,16 @@ async function getBrowser() {
     }
   }
   
-  // Local development - try common Chrome paths
+  // Local development or Docker - try common Chrome/Chromium paths
   const possiblePaths = [
+    process.env.PUPPETEER_EXECUTABLE_PATH, // Docker/Render
+    "/usr/bin/chromium",                   // Debian/Ubuntu chromium
+    "/usr/bin/chromium-browser",           // Alpine chromium
+    "/usr/bin/google-chrome",              // Google Chrome
     "C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe",
     "C:\\Program Files (x86)\\Google\\Chrome\\Application\\chrome.exe",
     "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome",
-    "/usr/bin/google-chrome",
-    "/usr/bin/chromium-browser",
-  ];
+  ].filter(Boolean) as string[];
   
   let executablePath = "";
   const fs = await import("fs");
