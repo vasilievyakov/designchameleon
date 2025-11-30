@@ -256,10 +256,33 @@ export default function Home() {
         </div>
       </main>
 
-      <footer className="border-t border-border px-6 py-4">
-        <div className="max-w-5xl mx-auto flex items-center justify-between text-xs text-muted-foreground">
-          <span>Design Chameleon</span>
-          <span>Gemini AI</span>
+      <footer className="border-t border-border px-6 py-6">
+        <div className="max-w-5xl mx-auto space-y-3">
+          <div className="flex items-center justify-between text-xs text-muted-foreground">
+            <span>Design Chameleon</span>
+            <span>Powered by Gemini AI</span>
+          </div>
+          <div className="flex items-center justify-center gap-4 text-xs text-muted-foreground">
+            <span>Made for</span>
+            <a 
+              href="https://t.me/vibecod3rs" 
+              target="_blank" 
+              rel="noopener noreferrer"
+              className="text-primary hover:underline font-medium"
+            >
+              Vibecod3rs Hackathon
+            </a>
+            <span>·</span>
+            <span>by</span>
+            <a 
+              href="https://t.me/nfg_ai" 
+              target="_blank" 
+              rel="noopener noreferrer"
+              className="text-primary hover:underline font-medium"
+            >
+              @nfg_ai
+            </a>
+          </div>
         </div>
       </footer>
     </div>

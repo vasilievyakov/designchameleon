@@ -1,0 +1,9 @@
+{
+  "functions": {
+    "src/app/api/analyze-url/route.ts": {
+      "memory": 1024,
+      "maxDuration": 60
+    }
+  }
+}
+
