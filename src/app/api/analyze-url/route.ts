@@ -5,9 +5,16 @@ import type { DesignSystem, ColorPalette } from "@/types/design-system";
 const GEMINI_API_URL = "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent";
 
 async function getBrowser() {
-  const puppeteer = await import("puppeteer");
+  const puppeteer = await import("puppeteer-core");
+  
+  // Determine executable path based on environment
+  const executablePath = process.env.PUPPETEER_EXECUTABLE_PATH || 
+    "/usr/bin/chromium" ||  // Docker/Render
+    "/usr/bin/chromium-browser" ||
+    "/usr/bin/google-chrome";
   
   return puppeteer.default.launch({
+    executablePath,
     headless: true,
     args: [
       "--no-sandbox",
@@ -15,6 +22,7 @@ async function getBrowser() {
       "--disable-dev-shm-usage",
       "--disable-gpu",
       "--single-process",
+      "--no-zygote",
     ],
     defaultViewport: { width: 1280, height: 800 },
   });
