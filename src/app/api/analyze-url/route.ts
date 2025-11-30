@@ -5,64 +5,18 @@ import type { DesignSystem, ColorPalette } from "@/types/design-system";
 const GEMINI_API_URL = "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent";
 
 async function getBrowser() {
-  const puppeteer = await import("puppeteer-core");
+  const puppeteer = await import("puppeteer");
   
-  // Check if running in Vercel/serverless
-  if (process.env.AWS_LAMBDA_FUNCTION_VERSION || process.env.VERCEL) {
-    // Try to use @sparticuz/chromium, but it may not work on all Vercel plans
-    try {
-      const chromium = await import("@sparticuz/chromium").then(m => m.default);
-      const execPath = await chromium.executablePath();
-      
-      // Check if executable exists
-      const fs = await import("fs");
-      if (!fs.existsSync(execPath)) {
-        throw new Error("Chromium binary not found");
-      }
-      
-      return puppeteer.launch({
-        args: chromium.args,
-        defaultViewport: { width: 1280, height: 800 },
-        executablePath: execPath,
-        headless: true,
-      });
-    } catch (e) {
-      console.error("Chromium error:", e);
-      throw new Error(
-        "URL analysis requires Chromium which is not available on Vercel Hobby plan. " +
-        "Please use the Image Upload feature instead, or run locally."
-      );
-    }
-  }
-  
-  // Local development or Docker - try common Chrome/Chromium paths
-  const possiblePaths = [
-    process.env.PUPPETEER_EXECUTABLE_PATH, // Docker/Render
-    "/usr/bin/chromium",                   // Debian/Ubuntu chromium
-    "/usr/bin/chromium-browser",           // Alpine chromium
-    "/usr/bin/google-chrome",              // Google Chrome
-    "C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe",
-    "C:\\Program Files (x86)\\Google\\Chrome\\Application\\chrome.exe",
-    "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome",
-  ].filter(Boolean) as string[];
-  
-  let executablePath = "";
-  const fs = await import("fs");
-  for (const p of possiblePaths) {
-    if (fs.existsSync(p)) {
-      executablePath = p;
-      break;
-    }
-  }
-  
-  if (!executablePath) {
-    throw new Error("Chrome not found. Please install Chrome or set CHROME_PATH environment variable.");
-  }
-  
-  return puppeteer.launch({
-    executablePath: process.env.CHROME_PATH || executablePath,
+  return puppeteer.default.launch({
     headless: true,
-    args: ["--no-sandbox", "--disable-setuid-sandbox"],
+    args: [
+      "--no-sandbox",
+      "--disable-setuid-sandbox",
+      "--disable-dev-shm-usage",
+      "--disable-gpu",
+      "--single-process",
+    ],
+    defaultViewport: { width: 1280, height: 800 },
   });
 }
 
