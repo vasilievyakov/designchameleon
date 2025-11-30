@@ -1,26 +1,18 @@
 import { NextRequest, NextResponse } from "next/server";
 import type { DesignSystem, ColorPalette } from "@/types/design-system";
 
-// Puppeteer imports - using dynamic import for edge compatibility
-let puppeteer: typeof import("puppeteer-core") | null = null;
-let chromium: typeof import("@sparticuz/chromium") | null = null;
-
 // Gemini API for intelligent color mapping
 const GEMINI_API_URL = "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent";
 
 async function getBrowser() {
-  if (!puppeteer) {
-    puppeteer = await import("puppeteer-core");
-  }
+  const puppeteer = await import("puppeteer-core");
   
   // Check if running in Vercel/serverless
   if (process.env.AWS_LAMBDA_FUNCTION_VERSION || process.env.VERCEL) {
-    if (!chromium) {
-      chromium = await import("@sparticuz/chromium");
-    }
+    const chromium = await import("@sparticuz/chromium").then(m => m.default);
     return puppeteer.launch({
       args: chromium.args,
-      defaultViewport: chromium.defaultViewport,
+      defaultViewport: { width: 1280, height: 800 },
       executablePath: await chromium.executablePath(),
       headless: true,
     });
@@ -36,15 +28,11 @@ async function getBrowser() {
   ];
   
   let executablePath = "";
+  const fs = await import("fs");
   for (const p of possiblePaths) {
-    try {
-      const fs = await import("fs");
-      if (fs.existsSync(p)) {
-        executablePath = p;
-        break;
-      }
-    } catch {
-      continue;
+    if (fs.existsSync(p)) {
+      executablePath = p;
+      break;
     }
   }
   
