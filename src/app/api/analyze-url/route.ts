@@ -9,13 +9,30 @@ async function getBrowser() {
   
   // Check if running in Vercel/serverless
   if (process.env.AWS_LAMBDA_FUNCTION_VERSION || process.env.VERCEL) {
-    const chromium = await import("@sparticuz/chromium").then(m => m.default);
-    return puppeteer.launch({
-      args: chromium.args,
-      defaultViewport: { width: 1280, height: 800 },
-      executablePath: await chromium.executablePath(),
-      headless: true,
-    });
+    // Try to use @sparticuz/chromium, but it may not work on all Vercel plans
+    try {
+      const chromium = await import("@sparticuz/chromium").then(m => m.default);
+      const execPath = await chromium.executablePath();
+      
+      // Check if executable exists
+      const fs = await import("fs");
+      if (!fs.existsSync(execPath)) {
+        throw new Error("Chromium binary not found");
+      }
+      
+      return puppeteer.launch({
+        args: chromium.args,
+        defaultViewport: { width: 1280, height: 800 },
+        executablePath: execPath,
+        headless: true,
+      });
+    } catch (e) {
+      console.error("Chromium error:", e);
+      throw new Error(
+        "URL analysis requires Chromium which is not available on Vercel Hobby plan. " +
+        "Please use the Image Upload feature instead, or run locally."
+      );
+    }
   }
   
   // Local development - try common Chrome paths

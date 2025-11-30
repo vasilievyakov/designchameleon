@@ -246,6 +246,9 @@ export function UploadZone({
               <li>• Analyze colors, spacing, shadows, border-radius</li>
               <li>• Generate a complete design system</li>
             </ul>
+            <p className="text-xs text-amber-500/80 mt-3">
+              Note: URL analysis may not work on the demo. Use Image Upload for best results.
+            </p>
           </div>
         </form>
       )}
